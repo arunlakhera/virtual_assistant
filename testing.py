@@ -19,3 +19,12 @@
 #
 # import seaborn
 # print('Seaborn: ', seaborn.__version__)
+# chrome_path = 'C:/Program Files/Google/Chrome/Application/chrome.exe %s'
+
+# import webbrowser as wb
+# chrome_path = 'open -a /Applications/Google\ Chrome.app %s'
+#
+# def search(sentence):
+#     wb.get(chrome_path).open("https://www.google.com/search?q=" + sentence)
+#
+# search("python tutorial")

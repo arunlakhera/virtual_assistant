@@ -15,12 +15,16 @@ sns.set()
 commands = commands_answers.commands
 answers = commands_answers.answers
 
+hour = datetime.datetime.now().strftime('%H:%M')
+date = datetime.date.today().strftime('%d/%B/%Y')
+date = date.split('/')
 # print(commands)
 # print(answers)
 
-my_name = "Prince"
+my_name = "Bob"
 
-chrome_path = 'C:/Program Files/Google/Chrome/Application/chrome.exe %s'
+# chrome_path = 'C:/Program Files/Google/Chrome/Application/chrome.exe %s'
+chrome_path = 'open -a /Applications/Google\ Chrome.app %s'
 
 
 def search(sentence):
@@ -115,7 +119,7 @@ def play_music_youtube(emotion):
 def speak(text):
 
     engine = pyttsx3.init()
-    engine.setProperty('rate', 125) # number of words per second
+    engine.setProperty('rate', 135) # number of words per second
     engine.setProperty('volume', 1) # min 0 max 1
     engine.say(text)
     engine.runAndWait()
@@ -144,4 +148,89 @@ def listen_microphone():
     return sentence
 
 
-listen_microphone()
+# listen_microphone()
+# playsound('recordings/speech.wav')
+
+def test_models():
+    audio_source = 'recordings/speech.wav' #'~/PycharmProjects/virtual_assistant/'
+    prediction = predict_sound(audio_source, loaded_model[2], plot=False)
+    return prediction
+
+# print(test_models())
+
+playing = False
+mode_control = False
+
+print('[INFO] Ready to start!')
+playsound('n1.mp3')
+
+while 1:
+    result = listen_microphone()
+
+    if my_name in result:
+        result = str(result.split(my_name + ' ')[1])
+        result = result.lower()
+        # print('The assistant has been activated')
+        # print('After Processing: ', result)
+
+        if result in commands[0]:
+            playsound('n2.mp3')
+            speak('I will read the list of my functionalities: ' + answers[0])
+
+        if result in commands[3]:
+            playsound('n2.mp3')
+            speak('It is now ' + hour)
+
+        if result in commands[4]:
+            playsound('n2.mp3')
+            speak('Today is ' + date[0] + ' of ' + date[1])
+
+        if result in commands[1]:
+            playsound('n2.mp3')
+            speak('Please tell me the activity!')
+            result = listen_microphone()
+            annotation = open('annotation.txt', mode='a+', encoding='utf-8')
+            annotation.write(result + '\n')
+            annotation.close()
+            speak(''.join(random.sample(answers[1], k=1)))
+            speak("Want me to read the notes!")
+            result = listen_microphone()
+
+            if result == 'yes' or result == 'sure':
+                with open('annotation.txt') as file_source:
+                    lines = file_source.readlines()
+                    for line in lines:
+                        speak(line)
+            else:
+                speak('Ok!')
+
+        if result in commands[2]:
+            playsound('n2.mp3')
+            speak(''.join(random.sample(answers[2], k=1)))
+            result = listen_microphone()
+            search(result)
+
+        if result in commands[6]:
+            playsound('n2.mp3')
+            if load_agenda.load_agenda():
+                speak('These are the events today:')
+                for i in range(len(load_agenda.load_agenda()[1])):
+                    speak(load_agenda.load_agenda()[1][i] + ' ' + load_agenda.load_agenda()[0][i] + ' schedule for '+ str(load_agenda.load_agenda()[2][i]))
+            else:
+                speak('There are no events today considering the current time.')
+
+        if result in commands[5]:
+            mode_control = True
+            playsound('n1.mp3')
+            speak('Emotion Analysis mode has been activated!')
+            if mode_control:
+                analyse = test_models()
+                print(f'I heard {analyse} in your voice!')
+                if not playing:
+                    playing = play_music_youtube(analyse[1])
+        if result == 'turn off':
+            playsound('n2.mp3')
+            speak(''.join(random.sample(answers[4], k = 1)))
+            break
+    else:
+        playsound('n3.mp3')

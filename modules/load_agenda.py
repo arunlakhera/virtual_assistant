@@ -12,7 +12,7 @@ current_time, current_minute = datetime.datetime.time(current_time).hour, dateti
 current_date = datetime.datetime.date(datetime.datetime.today())
 # print('Current date:', current_date)
 
-agenda_worksheet = 'D:/python_dev/virtual_assistant/agenda.xlsx'
+agenda_worksheet = '~/PycharmProjects/virtual_assistant/agenda.xlsx'
 agenda = pd.read_excel(agenda_worksheet)
 # print(agenda)
 
